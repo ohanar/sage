@@ -66,15 +66,3 @@ if [ $? -ne 0 ]; then
     echo >&2 "Error installing mergetools.rc"
     exit 1
 fi
-
-# As a sanity check that Mercurial works, run "hg log" on the spkg
-# repository and check that it works sensibly.
-# This used to fail with mercurial-1.8.4 on Solaris SPARC.
-cd ..
-if hg log >/dev/null; then
-    echo "Mercurial seems to work correctly."
-else
-    echo >&2 "Mercurial installed correctly, but doesn't seem to work properly."
-    echo >&2 "Running 'hg log' in the directory `pwd` failed."
-    exit 1
-fi
