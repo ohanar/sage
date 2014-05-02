@@ -1095,7 +1095,7 @@ class GraphLatex(SageObject):
             styles = ('Custom', 'Shade', 'Art', 'Normal', 'Dijkstra', 'Welsh', 'Classic', 'Simple')
             unit_names = ('in','mm','cm','pt', 'em', 'ex')
             shape_names = ('circle', 'sphere','rectangle', 'diamond')
-            label_places = ('above', 'below', 'right', 'left')
+            label_places = ('above', 'below', 'right', 'left', 'near start', 'near end')
             compass_points = ('NO', 'SO', 'EA', 'WE')
             number_types = (int, Integer, float, RealLiteral)
             #
@@ -1534,7 +1534,7 @@ class GraphLatex(SageObject):
         # Needs care for perfectly horizontal and vertical layouts
 
         # We grab the graph's layout (or it is computed as a consequence of the request)
-        pos = self._graph.layout()
+        pos = self._graph.layout(**self._options)
 
         if len(pos.values()) > 0:
             xmin = min([ i[0] for i in pos.values()])
@@ -1582,7 +1582,7 @@ class GraphLatex(SageObject):
         # Determine the spread in the x and y directions (i.e. xmax, ymax)
         # Needs care for perfectly horizontal and vertical layouts
         ### pos = copy.deepcopy(self._graph.layout(layout = layout, labels = "latex"))
-        pos = self._graph.layout()
+        pos = self._graph.layout(**self._options)
         if len(pos.values()) > 0:
             xmin = min([ i[0] for i in pos.values()])
             ymin = min([ i[1] for i in pos.values()])
@@ -1954,7 +1954,7 @@ class GraphLatex(SageObject):
                     s+=['lw=', str(round(scale*e_thick[edge],4)), units, ',']
                 s+=['style={']  # begin style list
                 if self._graph.is_directed() and not loop:
-                    s+=['post, bend right', ',']
+                    s+=['post,']
                 s+=['color=', edge_color_names[edge], ',']
                 if edge_fills:
                     s+=['double=', edge_fill_color_names[edge]]
@@ -1970,10 +1970,10 @@ class GraphLatex(SageObject):
                     s+=['text=', edge_label_color_names[edge], ',']
                     s+=['},']
                     el = self._graph.edge_label(edge[0],edge[1])
-                    if edge_labels_math and not (type(el)==str and el[0]=='$' and el[-1]=='$'):
-                        lab = '\hbox{$%s$}' % latex(el)
+                    if edge_labels_math and not (isinstance(el, str) and el[0]=='$' and el[-1]=='$'):
+                        lab = '{$%s$}' % latex(el)
                     else:
-                        lab = '\hbox{%s}' % el
+                        lab = '{%s}' % str(el)
                     s+=['label=', lab, ',']
             s+=[']']
             if not loop:

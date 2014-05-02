@@ -30,16 +30,8 @@ r'''\usepackage{amsmath}
 '''
 
 LATEX_HEADER = (
-r'''\documentclass{article}
-''' + COMMON_HEADER +
-r'''\oddsidemargin 0.0in
-\evensidemargin 0.0in
-\textwidth 6.45in
-\topmargin 0.0in
-\headheight 0.0in
-\headsep 0.0in
-\textheight 9.0in
-''')
+r'''\documentclass[border=10mm]{standalone}
+''' + COMMON_HEADER)
 
 SLIDE_HEADER = (
 r'''\documentclass[a0,8pt]{beamer}
@@ -1731,7 +1723,6 @@ def _latex_file_(objects, title='SAGE', debug=False, \
         sage: s = sage.misc.latex._latex_file_(blah())
         coucou
     """
-    process = True
     if has_latex_attr(objects):
         objects = [objects]
 
@@ -1743,23 +1734,11 @@ def _latex_file_(objects, title='SAGE', debug=False, \
     else:
         size=''
 
-    s = '%s\n\\begin{document}\n\\begin{center}{\\Large\\bf %s}\\end{center}\n%s'%(
-        extra_preamble, title, size)
+    s = '%s\n\\begin{document}\n%s'%(
+        extra_preamble, size)
 
-    #s += "(If something is missing it may be on the next page or there may be errors in the latex.  Use view with {\\tt debug=True}.)\\vfill"
-    s += '\\vspace{40mm}'
-    if process:
-        for i in range(len(objects)):
-            x = objects[i]
-            L = latex(x)
-            if not '\\begin{verbatim}' in L:
-                s += '%s%s%s'%(math_left, L, math_right)
-            else:
-                s += '%s'%L
-            if i < len(objects)-1:
-                s += '\n\n%s\n\n'%sep
-    else:
-        s += "\n\n".join([str(x) for x in objects])
+    for x in objects:
+        s+= latex(x)
 
     # latex_extra_preamble() is called here and not before because some objects
     # may require additional packages to be displayed in LaTeX. Hence, the call
